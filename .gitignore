@@ -1,0 +1,5 @@
+.idea
+vendor
+storage/tasks.csv
+config.ini
+tasks.csv
