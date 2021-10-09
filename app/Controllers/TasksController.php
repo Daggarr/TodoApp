@@ -18,10 +18,10 @@ class TasksController
 
     public function index()
     {
-        $tasks = $this->tasksRepository->getAll();
-
         if (isset($_SESSION['username']))
         {
+            $tasks = $this->tasksRepository->getAll();
+
             require_once 'app/Views/tasks/index.template.php';
         }
         else
@@ -44,28 +44,42 @@ class TasksController
 
     public function store()
     {
-        $task = new Task(
-          Uuid::uuid4(),
-          $_POST['title'],
-        );
+        if (isset($_SESSION['username']))
+        {
+            $task = new Task(
+                Uuid::uuid4(),
+                $_POST['title'],
+            );
 
-        $this->tasksRepository->save($task);
+            $this->tasksRepository->save($task);
 
-        header('Location: /tasks');
+            header('Location: /tasks');
+        }
+        else
+        {
+            header('Location: /');
+        }
     }
 
     public function delete(array $vars)
     {
-        $id = $vars['id'] ?? null;
-        if ($id == null) header('Location: /tasks');
-
-        $task = $this->tasksRepository->getOne($id);
-
-        if ($task !== null)
+        if (isset($_SESSION['username']))
         {
-            $this->tasksRepository->delete($task);
-        }
+            $id = $vars['id'] ?? null;
+            if ($id == null) header('Location: /tasks');
 
-        header('Location: /tasks');
+            $task = $this->tasksRepository->getOne($id);
+
+            if ($task !== null)
+            {
+                $this->tasksRepository->delete($task);
+            }
+
+            header('Location: /tasks');
+        }
+        else
+        {
+            header('Location: /');
+        }
     }
 }
